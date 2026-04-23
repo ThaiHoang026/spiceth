@@ -14,19 +14,33 @@ class Inductor(Component):
 
     # Mo hinh DC (cuon cam xem nhu short circuit)
     def stamp_dc(self, G, b, ctx):
-        # Ma tran dan nap G
-        mat_len = G.shape[0]
-        G = np.pad(G, ((0,1),(0,1)))
-        
+        if self.name not in ctx.vs_index:
+            raise ValueError(f"{self.name}: Inductor not indexed")
+
+        k = ctx.vs_index[self.name]
 
         if self.i != None:
-            G[self.i][mat_len] += 1
-            G[mat_len][self.i] += 1
+            G[self.i][k] += 1
+            G[k][self.i] += 1
 
         if self.j != None:
-            G[self.j][mat_len] -= 1
-            G[mat_len][self.j] -= 1
+            G[self.j][k] -= 1
+            G[k][self.j] -= 1
 
+
+    # Mo hinh AC
+    def stamp_ac(self, G, b, ctx):
+        Zl = 1 / (1j * ctx.omega * self.L)
+
+        if self.i is not None:
+            G[self.i, self.i] += Zl
+
+        if self.j is not None:
+            G[self.j, self.j] += Zl
+
+        if self.i is not None and self.j is not None:
+            G[self.i, self.j] -= Zl
+            G[self.j, self.i] -= Zl
 
     
     # Hien thi thong tin linh kien (cho debug)

@@ -8,7 +8,7 @@ class VoltageSource(Component):
     # Khai bao nguon ap V giua node i va j
     def __init__(self, name, node_i, node_j,
                 dc_value=None,
-                ac=None,
+                ac_value=None,
                 transient=None):
         
         self.name = name
@@ -16,11 +16,13 @@ class VoltageSource(Component):
         self.j = node_j
         
         self.dc = dc_value
-        self.ac = ac
+        self.ac = ac_value
         self.transient = transient
 
+
+    # Mo hinh linear voltage
     # Mo hinh DC
-    def stamp_dc(self, G, b, ctx):
+    def _stamp_linear(self, G, b, value, ctx):
         if self.name not in ctx.vs_index:
             raise ValueError(f"{self.name}: Voltage source not indexed")
 
@@ -35,7 +37,17 @@ class VoltageSource(Component):
             G[k][self.j] -= 1
 
         # Vector nguon input
-        b[k] += self.dc
+        b[k] += value
+    
+
+    # Mo hinh DC
+    def stamp_dc(self, G, b, ctx):
+        self._stamp_linear(G, b, self.dc, ctx)
+
+
+    # Mo hinh AC
+    def stamp_ac(self, G, b, ctx):
+        self._stamp_linear(G, b, self.ac, ctx)
 
 
 

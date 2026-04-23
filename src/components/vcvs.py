@@ -16,8 +16,8 @@ class VCVS(Component):
         self.A = value # Voltage gain
 
 
-    # Mo hinh DC
-    def stamp_dc(self, G, b, ctx):
+    # Mo hinh linear VCVS
+    def _stamp_linear(self, G, A, ctx):
         if self.name not in ctx.vs_index:
             raise ValueError(f"{self.name}: VCVS not indexed")
 
@@ -33,10 +33,20 @@ class VCVS(Component):
             G[k][self.n_m] -= 1
 
         if self.nc_p != None:
-            G[k][self.nc_p] -= self.A
+            G[k][self.nc_p] -= A
 
         if self.nc_m != None:
-            G[k][self.nc_m] += self.A
+            G[k][self.nc_m] += A
+
+
+    # Mo hinh DC
+    def stamp_dc(self, G, b, ctx):
+        self._stamp_linear(G, self.A, ctx)
+
+
+    # Mo hinh AC
+    def stamp_ac(self, G, b, ctx):
+        self._stamp_linear(G, self.A, ctx)
 
     
 

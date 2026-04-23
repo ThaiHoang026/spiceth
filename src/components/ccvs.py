@@ -15,8 +15,8 @@ class CCVS(Component):
         self.Rm = value # Resistance
 
 
-    # Mo hinh DC
-    def stamp_dc(self, G, b, ctx):
+    # Mo hinh linear CCVS
+    def _stamp_linear(self, G, Rm, ctx):
         if self.Vctrl not in ctx.vs_index:
             raise ValueError(f"{self.name}: control source {self.Vctrl} not found")
         
@@ -35,7 +35,14 @@ class CCVS(Component):
             G[self.n_m][Ie_idx] -= 1
             G[Ie_idx][self.n_m] -= 1
 
-        G[Ie_idx][k_ctrl] -= self.Rm
+        G[Ie_idx][k_ctrl] -= Rm
+
+
+
+
+    # Mo hinh DC
+    def stamp_dc(self, G, b, ctx):
+        self._stamp_linear(G, self.Rm, ctx)
     
 
     # Hien thi thong tin linh kien (cho debug)

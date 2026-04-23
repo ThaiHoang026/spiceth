@@ -21,7 +21,7 @@ def main():
 
     # Build, print ma tran MNA
     print("\n=== MATRIX ===")
-    G, b = MNABuilder(circuit).build_dc()
+    G, b = MNABuilder(circuit).build_ac()
      
     # Giai phuong trinh MNA
     x = Solver().solve_linear(G, b)

@@ -15,6 +15,20 @@ class Capacitor(Component):
     def stamp_dc(self, G, b, ctx):
         # Trong mo hinh DC, tu dien xem nhu mach ho
         pass
+
+    
+    # Mo hinh AC
+    def stamp_ac(self, G, b, ctx):
+        Zc = 1j * ctx.omega * self.C
+        if self.i is not None:
+            G[self.i, self.i] += Zc
+
+        if self.j is not None:
+            G[self.j, self.j] += Zc
+
+        if self.i is not None and self.j is not None:
+            G[self.i, self.j] -= Zc
+            G[self.j, self.i] -= Zc
     
 
     def __repr__(self):

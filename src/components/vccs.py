@@ -14,21 +14,30 @@ class VCCS(Component):
         self.Gm = value  # Transconductance (S)
 
 
-    # Mo hinh DC
-    def stamp_dc(self, G, b, ctx):
+    # Mo hinh linear VCCS
+    def _stamp_linear(self, G, Gm):
         # Ma tran dan nap G
         if self.n_p != None and self.nc_p != None:
-            G[self.n_p][self.nc_p] += self.Gm
+            G[self.n_p][self.nc_p] += Gm
 
         if self.n_p != None and self.nc_m != None:
-            G[self.n_p][self.nc_m] -= self.Gm
+            G[self.n_p][self.nc_m] -= Gm
 
         if self.n_m != None and self.nc_p != None:
-            G[self.n_m][self.nc_p] -= self.Gm
+            G[self.n_m][self.nc_p] -= Gm
 
         if self.n_m != None and self.nc_m != None:
-            G[self.n_m][self.nc_m] += self.Gm
+            G[self.n_m][self.nc_m] += Gm
 
+
+    # Mo hinh DC
+    def stamp_dc(self, G, b, ctx):
+        self._stamp_linear(G, self.Gm)
+
+
+    # Mo hinh AC
+    def stamp_ac(self, G, b, ctx):
+        self._stamp_linear(G, self.Gm)
     
 
     # Hien thi thong tin linh kien (cho debug)

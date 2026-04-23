@@ -3,6 +3,8 @@
 # Doc linh kien tu netlist va tao object Circuit
 # Tao danh sach linh kien va index node
 
+import numpy as np
+
 from components.resistor import Resistor
 from components.current_source import CurrentSource
 from components.voltage_source import VoltageSource
@@ -128,8 +130,8 @@ def parse_netlist(file_name):
                 # Linh kien nguon doc lap
                 elif prefix in ['I', 'V']:
 
-                    dc_value = None
-                    ac_mag = None
+                    dc_value = 0
+                    ac_mag = 0
                     ac_phase = 0
 
                     # name n1 n2 dc_value
@@ -176,10 +178,12 @@ def parse_netlist(file_name):
                     i = circuit.get_node_index(node1)
                     j = circuit.get_node_index(node2)
 
-                    ac = None if ac_mag is None else (ac_mag, ac_phase)
-
+                    # Tao AC value dang complex number
+                    phase_rad = np.radians(ac_phase) # Doi degree sang radian
+                    ac_value = ac_mag * np.exp(1j * phase_rad)
+                    
                     comp_class = component_map[prefix]
-                    comp = comp_class(name, i, j, dc_value, ac=ac, transient=None)
+                    comp = comp_class(name, i, j, dc_value, ac_value, transient=None)
 
                     circuit.add_component(comp)                    
 
@@ -187,9 +191,9 @@ def parse_netlist(file_name):
                 # Linh kien dieu kien bang dien ap (VCCS, VCVS)
                 # name np nm ncp ncm gain
                 elif prefix in ['G', 'E']:
-                    _, np, nm, ncp, ncm, gain_str = tokens
+                    _, n_p, nm, ncp, ncm, gain_str = tokens
 
-                    np = circuit.get_node_index(np)
+                    n_p = circuit.get_node_index(n_p)
                     nm = circuit.get_node_index(nm)
                     ncp = circuit.get_node_index(ncp)
                     ncm = circuit.get_node_index(ncm)
@@ -197,22 +201,22 @@ def parse_netlist(file_name):
                     gain = parse_value(gain_str)
 
                     comp_class = component_map[prefix]
-                    comp = comp_class(name, np, nm, ncp, ncm, gain)
+                    comp = comp_class(name, n_p, nm, ncp, ncm, gain)
 
                     circuit.add_component(comp)
 
                 # Linh kien dieu kien bang dong dien (CCCS, CCVS)
                 # name np nm vxxx gain
                 elif prefix in ['F', 'H']:
-                    _, np, nm, vxxx, gain_str = tokens
+                    _, n_p, nm, vxxx, gain_str = tokens
 
-                    np = circuit.get_node_index(np)
+                    n_p = circuit.get_node_index(n_p)
                     nm = circuit.get_node_index(nm)
 
                     gain = parse_value(gain_str)
 
                     comp_class = component_map[prefix]
-                    comp = comp_class(name, np, nm, vxxx, gain)
+                    comp = comp_class(name, n_p, nm, vxxx, gain)
 
                     circuit.add_component(comp)
 

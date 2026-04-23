@@ -13,9 +13,7 @@ class Resistor(Component):
 
 
     # Mo hinh ma tran dan nap G
-    def stamp_dc(self, G, b, ctx):
-        g = 1 / self.R
-
+    def _stamp_linear(self, G, g):
         if self.i is not None:
             G[self.i, self.i] += g
 
@@ -26,6 +24,15 @@ class Resistor(Component):
             G[self.i, self.j] -= g
             G[self.j, self.i] -= g
 
+
+    # Mo hinh DC
+    def stamp_dc(self, G, b, ctx):
+        self._stamp_linear(G, 1/self.R)
+
+
+    # Mo hinh AC
+    def stamp_ac(self, G, b, ctx):
+        self._stamp_linear(G, 1/self.R)
         
 
     # Hien thi thong tin linh kien (cho debug)

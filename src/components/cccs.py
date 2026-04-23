@@ -15,18 +15,26 @@ class CCCS(Component):
         self.A = value # Current gain
 
 
-    # Mo hinh DC
-    def stamp_dc(self, G, b, ctx):
+    # Mo hinh linear CCCS
+    def _stamp_linear(self, G, A, ctx):
         # Ma tran dan anp G
         k_ctrl = ctx.vs_index[self.Vctrl]
 
         if self.n_p is not None:
-            G[self.n_p][k_ctrl] += self.A
+            G[self.n_p][k_ctrl] += A
 
         if self.n_m is not None:
-            G[self.n_m][k_ctrl] -= self.A
+            G[self.n_m][k_ctrl] -= A
+
+
+    # Mo hinh DC
+    def stamp_dc(self, G, b, ctx):
+        self._stamp_linear(G, self.A, ctx)
 
     
+    # Mo hinh AC
+    def stamp_ac(self, G, b, ctx):
+        self._stamp_linear(G, self.A, ctx)
 
     # Hien thi thong tin linh kien (cho debug)
     def __repr__(self):
