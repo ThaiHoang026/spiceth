@@ -1,4 +1,7 @@
-V1 1 0 AC 1 0
-R1 1 2 1k
-L1 2 3 10m
-C1 3 0 1u
+V1 3 0 AC 20
+R1 3 1 10
+V2 4 1 0    # Đối với short-circuit, xem như nguồn áp (VoltageSource) có giá trị bằng 0
+C1 4 0 0.1
+L1 1 2 1
+L2 2 0 0.5
+F1 0 2 V2 2
