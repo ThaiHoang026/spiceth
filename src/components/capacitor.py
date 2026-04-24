@@ -19,16 +19,16 @@ class Capacitor(Component):
     
     # Mo hinh AC
     def stamp_ac(self, G, b, ctx):
-        Zc = 1j * ctx.omega * self.C
+        Yc = 1j * ctx.omega * self.C
         if self.i is not None:
-            G[self.i, self.i] += Zc
+            G[self.i, self.i] += Yc
 
         if self.j is not None:
-            G[self.j, self.j] += Zc
+            G[self.j, self.j] += Yc
 
         if self.i is not None and self.j is not None:
-            G[self.i, self.j] -= Zc
-            G[self.j, self.i] -= Zc
+            G[self.i, self.j] -= Yc
+            G[self.j, self.i] -= Yc
     
 
     def __repr__(self):

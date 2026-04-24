@@ -9,8 +9,9 @@ from components.inductor import Inductor
 from components.vcvs import VCVS
 from components.ccvs import CCVS
 
-f = 100 # Frequency (Hz)
-omega = 2 * np.pi * f
+# f = 100 # Frequency (Hz)
+# omega = 2 * np.pi * f
+omega = 4
 
 class MNABuilder:
     def __init__(self, circuit):

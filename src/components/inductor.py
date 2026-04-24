@@ -30,17 +30,17 @@ class Inductor(Component):
 
     # Mo hinh AC
     def stamp_ac(self, G, b, ctx):
-        Zl = 1 / (1j * ctx.omega * self.L)
+        Yl = 1 / (1j * ctx.omega * self.L)
 
         if self.i is not None:
-            G[self.i, self.i] += Zl
+            G[self.i, self.i] += Yl
 
         if self.j is not None:
-            G[self.j, self.j] += Zl
+            G[self.j, self.j] += Yl
 
         if self.i is not None and self.j is not None:
-            G[self.i, self.j] -= Zl
-            G[self.j, self.i] -= Zl
+            G[self.i, self.j] -= Yl
+            G[self.j, self.i] -= Yl
 
     
     # Hien thi thong tin linh kien (cho debug)
