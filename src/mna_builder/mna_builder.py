@@ -3,7 +3,6 @@
 import numpy as np
 
 from mna_builder.stamp_context import StampContext
-
 from components.voltage_source import VoltageSource
 from components.inductor import Inductor
 from components.vcvs import VCVS
@@ -11,7 +10,7 @@ from components.ccvs import CCVS
 
 # f = 100 # Frequency (Hz)
 # omega = 2 * np.pi * f
-omega = 4
+# omega = 2
 
 class MNABuilder:
     def __init__(self, circuit):
@@ -58,7 +57,11 @@ class MNABuilder:
         ctx = StampContext(self.vs_index, omega)
         
         for comp in self.circuit.components:
-            getattr(comp, f"stamp_{mode}")(G, b, ctx)
+            if mode == "dc":
+                comp.stamp_dc(G, b, ctx)
+            elif mode == "ac":
+                comp.stamp_ac(G, b, ctx)
+
                           
         # In ma tran G, vector b, index cua nguon ap (cho debug)
         print("G =\n", G)
@@ -74,5 +77,5 @@ class MNABuilder:
 
 
     # Build AC matrix
-    def build_ac(self):
+    def build_ac(self, omega):
         return self.build_linear(mode="ac", omega=omega)

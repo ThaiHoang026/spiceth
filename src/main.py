@@ -3,6 +3,8 @@
 from parser.netlist_parser import parse_netlist
 from mna_builder.mna_builder import MNABuilder
 from solver.solver import Solver
+from analysis.ac_analysis import ACAnalysis
+from analysis.plot import plot_bode
 
 
 def main():
@@ -14,29 +16,33 @@ def main():
     for name, idx in circuit.node_map.items():
         print(f"{name} -> {idx}")
 
-    # Print list cac components
+    # Print component list
     print("\n=== COMPONENTS ===")
     for comp in circuit.components:
         print(comp)
 
-    # Build, print ma tran MNA
-    print("\n=== MATRIX ===")
-    G, b = MNABuilder(circuit).build_ac()
-     
-    # Giai phuong trinh MNA
-    x = Solver().solve_linear(G, b)
+    print("\n=== Analysis===")
+    # Build va solve mach
+    builder = MNABuilder(circuit)
+    solver = Solver()
+    analysis = circuit.circuit_analysis
 
-    # Print vector x da giai
-    print("\n=== SOLUTION ===")
-    print("X =\n", x)
+    if analysis and analysis["type"] == "ac":
+        print(">>> RUN AC ANALYSIS")
 
-    # Print dien ap node
-    print("\n=== VOLTAGES ===")
-    for node_name, node_idx in circuit.node_map.items():
-        if node_name == '0':
-            print(f"V({node_name}) = 0.000000 V")
-        else:
-            print(f"V({node_name}) = {x[node_idx]:.6f} V")
+        ac = ACAnalysis(circuit, builder, solver)
+        results = ac.run()
+
+        # In ket qua
+        print(">>> DONE, number of points:", len(results))
+        for f, x in results:
+            print(f"f = {f:.2f} Hz, x = {x}")
+
+        # Ve do thi bode
+        print(">>> Bode plot")
+        plot_bode(results, vin_idx=0, vout_idx=1, title="Bode plot")
+
+
 
 
 

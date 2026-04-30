@@ -220,9 +220,45 @@ def parse_netlist(file_name):
 
                     circuit.add_component(comp)
 
-            # Khong xac dinh duoc loai linh kien
-            else:
-                raise ValueError(f"Unknown component: {name}")
 
-            
+            # Lenh config che do AC
+            # .AC DEC 10 1 1e6
+            elif tokens[0].startswith('.'):
+                directive = tokens[0].lower()
+
+                if directive == ".ac":
+                    if len(tokens) != 5:
+                        raise ValueError("Invalid .AC syntax")
+
+                _, sweep_type, points_str, f_start_str, f_end_str = tokens
+
+                sweep_type = sweep_type.upper()
+                points = int(points_str)
+                f_start = parse_value(f_start_str)
+                f_end = parse_value(f_end_str)
+
+                if sweep_type not in ["DEC", "LIN", "OCT"]:
+                    raise ValueError(f"Unknown sweep type: {sweep_type}")
+
+                if f_start <= 0:
+                    raise ValueError("f_start must be > 0")
+
+                if f_end <= f_start:
+                    raise ValueError("f_end must be > f_start")
+
+                if points <= 0:
+                    raise ValueError("points must be > 0")
+
+                circuit.circuit_analysis = {
+                    "type": "ac",
+                    "sweep": sweep_type,
+                    "points": points,
+                    "f_start": f_start,
+                    "f_end": f_end
+                }
+
+            # Khong xac dinh duoc syntax
+            else:
+                raise ValueError(f"Unknown syntax: {name}")
+
     return circuit
